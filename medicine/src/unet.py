@@ -140,8 +140,8 @@ class SegmentationPresetEval:
 def get_transform(train):
     #base_size = 520
     # crop_size = 480
-    base_size = 128
-    crop_size = 160
+    base_size = 256
+    crop_size = 256
 
     return SegmentationPresetTrain(base_size, crop_size) if train else SegmentationPresetEval(base_size,crop_size)
 
@@ -150,7 +150,8 @@ def create_model(num_classes):
     return model
 
 def main(args):
-    device = torch.device(args.device if torch.backends.mps.is_available() else "cpu")
+#    device = torch.device(args.device if torch.backends.mps.is_available() else "cpu")
+    device = "cpu"
     batch_size = args.batch_size
     # segmentation nun_classes + background
     num_classes = args.num_classes + 1

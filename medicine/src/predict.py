@@ -39,7 +39,7 @@ def main():
 
     palette_path = "./palette.json"
 
-    base_size,crop_size = 128,160
+    base_size,crop_size = 256,256
 
     with open(palette_path, "rb") as f:
         pallette_dict = json.load(f)
@@ -52,7 +52,8 @@ def main():
     target_img = Image.open(result_path)
 
     # get devices
-    device = torch.device("mps" if torch.backends.mps.is_available() else "cpu")
+    #device = torch.device("mps" if torch.backends.mps.is_available() else "cpu")
+    device = "cpu"
     print("using {} device.".format(device))
 
     # create model
@@ -60,13 +61,16 @@ def main():
     num_classes = args.num_classes + 1
     model = create_model(num_classes)
 
-    weights_dict = torch.load(weights_path, map_location='mps')['model']
+#    weights_dict = torch.load(weights_path, map_location='mps')['model']
+    weights_dict = torch.load(weights_path, map_location='cpu')['model']
 
     model.load_state_dict(weights_dict)
     model.to(device)
-
+    resized_image = original_img.resize((128,128),Image.LANCZOS)
+    resized_target = target_img.resize((128,128),Image.LANCZOS)
     seg = get_transform(False)
-    clipped_img,clipped_target = seg(original_img,target_img)
+    clipped_img,clipped_target = seg(resized_image,resized_target)
+
     # expand batch dimension
     img = torch.unsqueeze(clipped_img, dim=0)
 
